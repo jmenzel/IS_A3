@@ -6,13 +6,13 @@ namespace Fishing_for_Numbers
 {
     public class Game
     {
-        private readonly Player _playerA;
-        private readonly Player _playerB;
+        private readonly IPlayer _playerA;
+        private readonly IPlayer _playerB;
         private readonly Board _board;
-        private readonly IDictionary<Player, List<int>> _stats;
+        private readonly IDictionary<IPlayer, List<int>> _stats;
         private readonly int _destinationNumber;
 
-        public Game(Player playerA, Player playerB)
+        public Game(IPlayer playerA, IPlayer playerB)
         {
             _playerA = playerA;
             _playerB = playerB;
@@ -20,14 +20,14 @@ namespace Fishing_for_Numbers
             _board = new Board();
             _board.GenerateNumbers();
 
-            _stats = new Dictionary<Player, List<int>>();
+            _stats = new Dictionary<IPlayer, List<int>>();
             _stats[_playerA] = new List<int>();
             _stats[_playerB] = new List<int>();
 
             _destinationNumber = GenerateDestinationNumber();
         }
 
-        public Player CurrentPlayer { get; set; }
+        public IPlayer CurrentPlayer { get; set; }
 
         private int GenerateDestinationNumber()
         {
@@ -39,31 +39,29 @@ namespace Fishing_for_Numbers
             return !_board.GetFreeNumbers().Any();
         }
 
-        public Tuple<Player, Player> GetWinningPlayer()
+        public Tuple<IPlayer, IPlayer> GetWinningPlayer()
         {
             var playerADiff = Math.Abs((GetCurrentNumberOf(_playerA) - _destinationNumber));
             var playerBDiff = Math.Abs((GetCurrentNumberOf(_playerB) - _destinationNumber));
 
-            if(playerADiff == playerBDiff) return new Tuple<Player, Player>(_playerA, _playerB);
+            if(playerADiff == playerBDiff) return new Tuple<IPlayer, IPlayer>(_playerA, _playerB);
 
-            return playerADiff < playerBDiff ? new Tuple<Player, Player>(_playerA, null) : new Tuple<Player, Player>(_playerB, null);
+            return playerADiff < playerBDiff ? new Tuple<IPlayer, IPlayer>(_playerA, null) : new Tuple<IPlayer, IPlayer>(_playerB, null);
         }
 
-        public void MakeMove(Player player, int numberFromBoard)
+        public void MakeMove(IPlayer player)
         {
-            if(!IsValidFreeNumber(numberFromBoard)) 
+            var numberFromBoard = player.ChooseNumber(_board);
+
+            if(!_board.IsValidFreeNumber(numberFromBoard)) 
                 throw new ArgumentException("number must be a free number from the board");
 
             _board.SetNumberAsChoosen(numberFromBoard);
             _stats[player].Add(numberFromBoard);
         }
 
-        public bool IsValidFreeNumber(int choosenNumber)
-        {
-            return _board.GetFreeNumbers().Contains(choosenNumber);
-        }
 
-        public int GetCurrentNumberOf(Player player)
+        public int GetCurrentNumberOf(IPlayer player)
         {
             return _stats[player].Sum();
         }
@@ -76,6 +74,47 @@ namespace Fishing_for_Numbers
             Console.WriteLine("Destination Number: " + _destinationNumber);
             Console.Write(left + " | " + right + Environment.NewLine);
             _board.Draw();
+        }
+
+        public void Start()
+        {
+            //Game Loop
+            while (!GameFinished())
+            {
+                //Set next player
+                CurrentPlayer = CurrentPlayer == null || CurrentPlayer == _playerB ?  _playerA : _playerB;
+
+                //Clear CLS
+                Console.Clear();
+
+                //Draw game board
+                DrawBoard();
+
+
+
+                MakeMove(CurrentPlayer);
+
+                if (!GameFinished()) continue;
+                    
+
+                //Get Winner HumanPlayer and Prints
+                var winner = GetWinningPlayer();
+
+                Console.Clear();
+                DrawBoard();
+
+                Console.WriteLine("Game Finished");
+
+                if (winner.Item2 != null)
+                {
+                    Console.WriteLine("This round is drawn");
+                }
+                else
+                {
+                    Console.WriteLine("Winner is " + winner.Item1);
+                    Console.WriteLine("With the Number " + GetCurrentNumberOf(winner.Item1));
+                }
+            }
         }
     }
 }

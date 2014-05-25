@@ -39,6 +39,12 @@ namespace Fishing_for_Numbers
         }
 
 
+        public bool IsValidFreeNumber(int choosenNumber)
+        {
+            return GetFreeNumbers().Contains(choosenNumber);
+        }
+
+
         public void Draw()
         {
             //Listen sortiern

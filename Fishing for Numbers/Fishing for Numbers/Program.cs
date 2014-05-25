@@ -1,78 +1,68 @@
 ﻿using System;
+using System.Linq;
 
 namespace Fishing_for_Numbers
 {
     class Program
     {
+        public static readonly Tuple<string, Func<IPlayer>>[] AvailablePlayer =
+        {
+            new Tuple<string, Func<IPlayer>>("[0] - Human Player", () => new HumanPlayer()), 
+            new Tuple<string, Func<IPlayer>>("[1] - AI Elli", () => new ElliAi())
+        };
+
+
         static void Main()
         {
-            var readLine = string.Empty;
+            string readLine;
+            IPlayer playerA = null;
+            IPlayer playerB = null;
+
             do
             {
-                Console.Write("Name Player A: ");
-                var nameA = Console.ReadLine();
-
-                Console.Write("Name Player B: ");
-                var nameB = Console.ReadLine();
-
-                var playerA = new Player(nameA);
-                var playerB = new Player(nameB);
-
-                var game = new Game(playerA, playerB);
-
-                while (!game.GameFinished())
+                if (playerA == null)
                 {
-                    //Set next player
-                    game.CurrentPlayer = game.CurrentPlayer == null || game.CurrentPlayer == playerB ?  playerA : playerB;
-
-                    //Clear CLS
-                    Console.Clear();
-
-                    //Draw game board
-                    game.DrawBoard();
-
-                    var choosenNumber = int.MinValue;
-                    do
-                    {
-                        try
-                        {
-                            Console.Write("Make your Choice " + game.CurrentPlayer + ": ");
-                            choosenNumber = Convert.ToInt32(Console.ReadLine());
-                        }
-                        catch (Exception)
-                        {
-                            Console.Error.Write("Must be a number!");
-                        }
-
-                    } 
-                    while (!game.IsValidFreeNumber(choosenNumber));
-
-                    game.MakeMove(game.CurrentPlayer, choosenNumber);
-
-                    if (!game.GameFinished()) continue;
-                    
-
-                    //Get Winner Player and Prints
-                    var winner = game.GetWinningPlayer();
-
-                    Console.Clear();
-                    game.DrawBoard();
-
-                    Console.WriteLine("Game Finished");
-
-                    if (winner.Item2 != null)
-                    {
-                        Console.WriteLine("This round is drawn");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Winner is " + winner.Item1);
-                        Console.WriteLine("With the Number " + game.GetCurrentNumberOf(winner.Item1));
-                    }
+                    Console.WriteLine("Select first player");
+                    playerA = ShowPlayerChoiceAndGetPlayer();
                 }
 
+                if (playerB == null)
+                {
+                    Console.WriteLine("Select second player");
+                    playerB = ShowPlayerChoiceAndGetPlayer();
+                }
+
+                var game = new Game(playerA, playerB);
+                game.Start();
+
+                Console.WriteLine("Type exit to leave, hit Enter for new Game: ");
                 readLine = Console.ReadLine();
-            } while (readLine != null && readLine.ToLower() != "exit");
+            } 
+            while (String.IsNullOrEmpty(readLine) || readLine.ToLower() != "exit");
+        }
+
+        private static IPlayer ShowPlayerChoiceAndGetPlayer()
+        {
+            foreach (var player in AvailablePlayer)
+            {
+                Console.WriteLine(player.Item1);
+            }
+            var playerChoice = int.MinValue;
+
+            do
+            {
+                try
+                {
+                    playerChoice = Convert.ToInt32(Console.ReadLine());
+                }
+                catch (Exception)
+                {
+                    Console.Error.WriteLine("Must be a Number between 0 and " + (AvailablePlayer.Length - 1));
+                }
+
+            } while (playerChoice < 0 && playerChoice >= AvailablePlayer.Length);
+
+            return AvailablePlayer[playerChoice].Item2();
         }
     }
 }
