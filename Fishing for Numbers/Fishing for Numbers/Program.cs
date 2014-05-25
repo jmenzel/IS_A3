@@ -16,12 +16,18 @@ namespace Fishing_for_Numbers
 
         static void Main()
         {
-            string readLine;
+            var command = string.Empty;
             IPlayer playerA = null;
             IPlayer playerB = null;
 
             do
             {
+                if (!String.IsNullOrEmpty(command) && command.ToLower() == "reset")
+                {
+                    playerA = null;
+                    playerB = null;
+                }
+
                 if (playerA == null)
                 {
                     Console.WriteLine("Select first player");
@@ -37,10 +43,12 @@ namespace Fishing_for_Numbers
                 var game = new Game(playerA, playerB);
                 game.Start();
 
-                Console.WriteLine("Type exit to leave, hit Enter for new Game: ");
-                readLine = Console.ReadLine();
+                Console.WriteLine("Type 'exit' to leave" + Environment.NewLine +
+                                  "Type 'reset' for new player selection" + Environment.NewLine +
+                                  "Hit Enter for new Game" + Environment.NewLine);
+                command = Console.ReadLine();
             } 
-            while (String.IsNullOrEmpty(readLine) || readLine.ToLower() != "exit");
+            while (String.IsNullOrEmpty(command) || command.ToLower() != "exit");
         }
 
         private static IPlayer ShowPlayerChoiceAndGetPlayer()
