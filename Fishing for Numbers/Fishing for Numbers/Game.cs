@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Fishing_for_Numbers.Player;
 
 namespace Fishing_for_Numbers
 {
@@ -51,10 +52,12 @@ namespace Fishing_for_Numbers
 
         public void MakeMove(IPlayer player)
         {
-            var numberFromBoard = player.ChooseNumber(_board);
+            var numberFromBoard = int.MinValue;
+            do
+            {
+                numberFromBoard = player.ChooseNumber(_destinationNumber, GetCurrentNumberOf(player), _board.GetFreeNumbers());
 
-            if(!_board.IsValidFreeNumber(numberFromBoard)) 
-                throw new ArgumentException("number must be a free number from the board");
+            } while (!_board.IsValidFreeNumber(numberFromBoard));
 
             _board.SetNumberAsChoosen(numberFromBoard);
             _stats[player].Add(numberFromBoard);

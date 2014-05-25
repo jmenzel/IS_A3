@@ -42,10 +42,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Board.cs" />
-    <Compile Include="ElliAi.cs" />
+    <Compile Include="Player\ElliAi.cs" />
     <Compile Include="Game.cs" />
-    <Compile Include="IPlayer.cs" />
-    <Compile Include="HumanPlayer.cs" />
+    <Compile Include="Player\IPlayer.cs" />
+    <Compile Include="Player\HumanPlayer.cs" />
+    <Compile Include="Player\RandyAi.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

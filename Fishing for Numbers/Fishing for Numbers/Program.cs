@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Fishing_for_Numbers.Player;
 
 namespace Fishing_for_Numbers
 {
@@ -8,7 +9,8 @@ namespace Fishing_for_Numbers
         public static readonly Tuple<string, Func<IPlayer>>[] AvailablePlayer =
         {
             new Tuple<string, Func<IPlayer>>("[0] - Human Player", () => new HumanPlayer()), 
-            new Tuple<string, Func<IPlayer>>("[1] - AI Elli", () => new ElliAi())
+            new Tuple<string, Func<IPlayer>>("[1] - AI Elli", () => new ElliAi()),
+            new Tuple<string, Func<IPlayer>>("[2] - AI Randy", () => new RandyAi())
         };
 
 
