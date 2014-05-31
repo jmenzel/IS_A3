@@ -5,6 +5,8 @@ VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fishing for Numbers", "Fishing for Numbers\Fishing for Numbers.csproj", "{17A4D153-0992-4C3B-99DB-3E6F8707CF43}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fishing for Numbers Tests", "Fishing for Numbers Tests\Fishing for Numbers Tests.csproj", "{7592B14A-3F93-464D-BEF9-622C52C33448}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{17A4D153-0992-4C3B-99DB-3E6F8707CF43}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{17A4D153-0992-4C3B-99DB-3E6F8707CF43}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{17A4D153-0992-4C3B-99DB-3E6F8707CF43}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7592B14A-3F93-464D-BEF9-622C52C33448}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7592B14A-3F93-464D-BEF9-622C52C33448}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7592B14A-3F93-464D-BEF9-622C52C33448}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7592B14A-3F93-464D-BEF9-622C52C33448}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
