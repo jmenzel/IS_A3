@@ -1,4 +1,7 @@
-﻿namespace Fishing_for_Numbers
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace Fishing_for_Numbers
 {
     public class MiniMaxTree: Tree<int>
     {
@@ -7,5 +10,10 @@
 
         public MiniMaxTree(int number) : base(number)
         { }
+
+        public IEnumerable<MiniMaxTree> GetChields()
+        {
+            return _children.Select(tree => (MiniMaxTree)tree).ToArray();
+        }
     }
 }

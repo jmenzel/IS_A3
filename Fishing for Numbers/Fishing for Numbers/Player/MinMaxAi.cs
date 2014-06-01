@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Net.Security;
 
@@ -42,6 +43,43 @@ namespace Fishing_for_Numbers.Player
                 parent.AddChild(node);
                 BuildGameTreeRek(node.NumbersLeft, depthLeft - 1, node);
             }
+        }
+
+        private int Max(MiniMaxTree node, ref int a, ref int b)
+        {
+            if (node.IsLeaf()) return EvaluateMove(node);
+
+            var best = int.MinValue;
+
+            foreach (var child in node.GetChields())
+            {
+                if (best > a) a = best;
+                var min = Min(child, ref a, ref b);
+                if (min > best) best = min;
+                if (best >= b) return best;
+            }
+            return best;
+        }
+
+        private int Min(MiniMaxTree node, ref int a, ref int b)
+        {
+            if (node.IsLeaf()) return EvaluateMove(node);
+            
+            var best = int.MaxValue;
+
+            foreach (var child in node.GetChields())
+            {
+                if (best < b) b = best;
+                var max = Max(child, ref a, ref b);
+                if (max < best) best = max;
+                if (a >= best) return best;
+            }
+            return best;
+        }
+
+        private int EvaluateMove(MiniMaxTree node)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

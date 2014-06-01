@@ -6,8 +6,8 @@ namespace Fishing_for_Numbers
 {
     public class Tree<T>
     {
-        private readonly LinkedList<Tree<T>> _children;
-        public T Data { get; private set; }
+        protected readonly LinkedList<Tree<T>> _children;
+        protected T Data { get; set; }
 
         protected Tree(T data)
         {
@@ -46,5 +46,12 @@ namespace Fishing_for_Numbers
                 TraverseRek(child, func);
             }
         }
+
+        public bool IsLeaf()
+        {
+            return !_children.Any();
+        }
+
+
     }
 }
