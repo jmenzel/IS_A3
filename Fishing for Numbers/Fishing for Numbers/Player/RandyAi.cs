@@ -12,9 +12,11 @@ namespace Fishing_for_Numbers.Player
         }
 
         public string Name { get; private set; }
-        public int ChooseNumber(int destinationNumber, int currentPlayerSum, IEnumerable<int> freeNumbers)
+        public int DestinationNumber { get; set; }
+
+        public int ChooseNumber(int currentPlayerSum, IEnumerable<int> freeNumbers)
         {
-            return currentPlayerSum < destinationNumber ? freeNumbers.Max() : freeNumbers.Min();
+            return currentPlayerSum < DestinationNumber ? freeNumbers.Max() : freeNumbers.Min();
         }
 
         public override string ToString()

@@ -12,6 +12,8 @@ namespace Fishing_for_Numbers
         private readonly Board _board;
         private readonly IDictionary<IPlayer, List<int>> _stats;
         private readonly int _destinationNumber;
+        private IPlayer CurrentPlayer { get; set; }
+
 
         public Game(IPlayer playerA, IPlayer playerB)
         {
@@ -26,9 +28,11 @@ namespace Fishing_for_Numbers
             _stats[_playerB] = new List<int>();
 
             _destinationNumber = GenerateDestinationNumber();
+
+            playerA.DestinationNumber = _destinationNumber;
+            playerB.DestinationNumber = _destinationNumber;
         }
 
-        public IPlayer CurrentPlayer { get; set; }
 
         private int GenerateDestinationNumber()
         {
@@ -52,10 +56,10 @@ namespace Fishing_for_Numbers
 
         public void MakeMove(IPlayer player)
         {
-            var numberFromBoard = int.MinValue;
+            int numberFromBoard;
             do
             {
-                numberFromBoard = player.ChooseNumber(_destinationNumber, GetCurrentNumberOf(player), _board.GetFreeNumbers());
+                numberFromBoard = player.ChooseNumber(GetCurrentNumberOf(player), _board.GetFreeNumbers());
 
             } while (!_board.IsValidFreeNumber(numberFromBoard));
 
@@ -93,12 +97,13 @@ namespace Fishing_for_Numbers
                 //Draw game board
                 DrawBoard();
 
-
-
+                //Tell player to make a Move
                 MakeMove(CurrentPlayer);
 
+                //Check if Game is Finished
                 if (!GameFinished()) continue;
-                    
+                 
+                //Yep, it is
 
                 //Get Winner HumanPlayer and Prints
                 var winner = GetWinningPlayer();

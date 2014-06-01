@@ -11,18 +11,38 @@ namespace Fishing_for_Numbers.Player
 
         private MiniMaxTree _currentTree;
 
+        public string Name { get; private set; }
+        public int DestinationNumber { get; set; }
+
+        public int CurrentPlayerSum { get; set; }
+
         public MinMaxAi(int treeDepth)
         {
             _treeDepth = treeDepth;
             Name = "MinMax-AI";
         }
 
-        public string Name { get; private set; }
-
-
-        public int ChooseNumber(int destinationNumber, int currentPlayerSum, IEnumerable<int> freeNumbers)
+        public int ChooseNumber(int currentPlayerSum, IEnumerable<int> freeNumbers)
         {
-            return 0;
+            CurrentPlayerSum = currentPlayerSum;
+            _currentTree = BuildGameTree(freeNumbers.ToArray(), _treeDepth);
+
+            var a = 0;
+            var b = 0;
+
+            var max = Max(_currentTree, ref a, ref b);
+            var number = int.MinValue;
+
+            _currentTree.Traverse(treeNode =>
+            {
+                var node = (MiniMaxTree) treeNode;
+                if (node.EvaluatedValue == max)
+                {
+                    number = node.Data;
+                }
+            });
+
+            return number;
         }
 
         public static MiniMaxTree BuildGameTree(int[] numbers, int depth)
@@ -47,7 +67,10 @@ namespace Fishing_for_Numbers.Player
 
         private int Max(MiniMaxTree node, ref int a, ref int b)
         {
-            if (node.IsLeaf()) return EvaluateMove(node);
+            if (node.IsLeaf())
+            {
+                return EvaluateMove(node);
+            }
 
             var best = int.MinValue;
 
@@ -79,7 +102,34 @@ namespace Fishing_for_Numbers.Player
 
         private int EvaluateMove(MiniMaxTree node)
         {
-            throw new System.NotImplementedException();
+            int val;
+
+            var maxNumber = node.NumbersLeft.Union(new[] { node.Data }).Max();
+            var minNumber = node.NumbersLeft.Union(new[] { node.Data }).Min();
+
+            //Sind wir noch unter der Zahl? Dann maximal
+            if (CurrentPlayerSum < DestinationNumber)
+            {
+                //Je größer desto besser
+                val = node.Data;
+            }
+            //sonst minimal
+            else
+            {
+                if (node.Data == minNumber)
+                {
+                    //Kleinste ist gut
+                    val = maxNumber;
+                }
+                else
+                {
+                    //je höher desto schlechter also kleinere zahlen
+                    val = minNumber - node.Data;
+                }
+            }
+            
+            node.EvaluatedValue = val;
+            return val;
         }
     }
 }

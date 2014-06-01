@@ -11,7 +11,7 @@ namespace Fishing_for_Numbers
             new Tuple<string, Func<IPlayer>>("[0] - Human Player", () => new HumanPlayer()), 
             new Tuple<string, Func<IPlayer>>("[1] - AI Elli", () => new ElliAi()),
             new Tuple<string, Func<IPlayer>>("[2] - AI Randy", () => new RandyAi()),
-            new Tuple<string, Func<IPlayer>>("[3] - AI MiniMax", () => new MinMaxAi(3))
+            new Tuple<string, Func<IPlayer>>("[3] - AI MiniMax", () => new MinMaxAi(7))
         };
 
 

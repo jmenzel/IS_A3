@@ -12,7 +12,9 @@ namespace Fishing_for_Numbers.Player
         }
 
         public string Name { get; private set; }
-        public int ChooseNumber(int destinationNumber, int currentPlayerSum, IEnumerable<int> freeNumbers)
+        public int DestinationNumber { get; set; }
+
+        public int ChooseNumber(int currentPlayerSum, IEnumerable<int> freeNumbers)
         {
             var numArray = freeNumbers as int[] ?? freeNumbers.ToArray();
             var pos = new Random((int)DateTime.Now.Ticks).Next(0, numArray.Length - 1);

@@ -8,6 +8,8 @@ namespace Fishing_for_Numbers
         public int Evaluation { get; set; }
         public int[] NumbersLeft { get; set; }
 
+        public int EvaluatedValue { get; set; }
+
         public MiniMaxTree(int number) : base(number)
         { }
 

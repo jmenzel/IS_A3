@@ -22,8 +22,9 @@ namespace Fishing_for_Numbers.Player
         }
 
         public string Name { get; private set; }
+        public int DestinationNumber { get; set; }
 
-        public int ChooseNumber(int destinationNumber, int currentPlayerSum, IEnumerable<int> freeNumbers)
+        public int ChooseNumber(int currentPlayerSum, IEnumerable<int> freeNumbers)
         {
             var choosenNumber = int.MinValue;
             

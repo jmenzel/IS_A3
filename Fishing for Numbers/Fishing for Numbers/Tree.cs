@@ -7,7 +7,7 @@ namespace Fishing_for_Numbers
     public class Tree<T>
     {
         protected readonly LinkedList<Tree<T>> _children;
-        protected T Data { get; set; }
+        public T Data { get; protected set; }
 
         protected Tree(T data)
         {
