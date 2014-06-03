@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Net.Security;
@@ -27,27 +28,20 @@ namespace Fishing_for_Numbers.Player
             CurrentPlayerSum = currentPlayerSum;
             _currentTree = BuildGameTree(freeNumbers.ToArray(), _treeDepth);
 
-            var a = 0;
-            var b = 0;
+            var bestDiff = NegaMax(_currentTree, CurrentPlayerSum);
 
-            var max = Max(_currentTree, ref a, ref b);
-            var number = int.MinValue;
+            var retNode = _currentTree.GetChields().First(node => node.Diff == bestDiff);
 
-            _currentTree.Traverse(treeNode =>
-            {
-                var node = (MiniMaxTree) treeNode;
-                if (node.EvaluatedValue == max)
-                {
-                    number = node.Data;
-                }
-            });
+            //_currentTree.Traverse(tree => Console.WriteLine(tree.Data + " -> " + ((MiniMaxTree)tree).Diff));
 
-            return number;
+            return retNode.Data;
         }
+
+
 
         public static MiniMaxTree BuildGameTree(int[] numbers, int depth)
         {
-            var tree = new MiniMaxTree(int.MinValue);
+            var tree = new MiniMaxTree(0);
             BuildGameTreeRek(numbers, depth, tree);
             return tree;
         }
@@ -65,71 +59,16 @@ namespace Fishing_for_Numbers.Player
             }
         }
 
-        private int Max(MiniMaxTree node, ref int a, ref int b)
+        public int NegaMax(MiniMaxTree node, int sumOfPath)
         {
-            if (node.IsLeaf())
+            if (!node.IsLeaf())
             {
-                return EvaluateMove(node);
+                node.Diff = node.GetChields().Select(child => NegaMax(child, sumOfPath + node.Data)).Min();
+                return node.Diff;
             }
 
-            var best = int.MinValue;
-
-            foreach (var child in node.GetChields())
-            {
-                if (best > a) a = best;
-                var min = Min(child, ref a, ref b);
-                if (min > best) best = min;
-                if (best >= b) return best;
-            }
-            return best;
-        }
-
-        private int Min(MiniMaxTree node, ref int a, ref int b)
-        {
-            if (node.IsLeaf()) return EvaluateMove(node);
-            
-            var best = int.MaxValue;
-
-            foreach (var child in node.GetChields())
-            {
-                if (best < b) b = best;
-                var max = Max(child, ref a, ref b);
-                if (max < best) best = max;
-                if (a >= best) return best;
-            }
-            return best;
-        }
-
-        private int EvaluateMove(MiniMaxTree node)
-        {
-            int val;
-
-            var maxNumber = node.NumbersLeft.Union(new[] { node.Data }).Max();
-            var minNumber = node.NumbersLeft.Union(new[] { node.Data }).Min();
-
-            //Sind wir noch unter der Zahl? Dann maximal
-            if (CurrentPlayerSum < DestinationNumber)
-            {
-                //Je größer desto besser
-                val = node.Data;
-            }
-            //sonst minimal
-            else
-            {
-                if (node.Data == minNumber)
-                {
-                    //Kleinste ist gut
-                    val = maxNumber;
-                }
-                else
-                {
-                    //je höher desto schlechter also kleinere zahlen
-                    val = minNumber - node.Data;
-                }
-            }
-            
-            node.EvaluatedValue = val;
-            return val;
+            node.Diff = Math.Abs(DestinationNumber - sumOfPath + node.Data);
+            return node.Diff;
         }
     }
 }

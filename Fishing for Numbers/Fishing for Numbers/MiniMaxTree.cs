@@ -9,6 +9,7 @@ namespace Fishing_for_Numbers
         public int[] NumbersLeft { get; set; }
 
         public int EvaluatedValue { get; set; }
+        public int Diff { get; set; }
 
         public MiniMaxTree(int number) : base(number)
         { }
