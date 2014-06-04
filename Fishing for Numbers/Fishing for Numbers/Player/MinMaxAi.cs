@@ -23,21 +23,52 @@ namespace Fishing_for_Numbers.Player
             Name = "MinMax-AI";
         }
 
+        public override string ToString()
+        {
+            return Name;
+        }
+
         public int ChooseNumber(int currentPlayerSum, IEnumerable<int> freeNumbers)
         {
             CurrentPlayerSum = currentPlayerSum;
             _currentTree = BuildGameTree(freeNumbers.ToArray(), _treeDepth);
 
-            var bestDiff = NegaMax(_currentTree, CurrentPlayerSum);
+            var diff = NegaMax(_currentTree, CurrentPlayerSum);
+            var node = Evaluate(_currentTree, diff);
 
-            var retNode = _currentTree.GetChields().First(node => node.Diff == bestDiff);
-
-            //_currentTree.Traverse(tree => Console.WriteLine(tree.Data + " -> " + ((MiniMaxTree)tree).Diff));
-
-            return retNode.Data;
+            PrintPath(node, 0, diff);
+            //Console.ReadLine();
+            return node.Data;
         }
 
+        private MiniMaxTree Evaluate(MiniMaxTree tree, int diff)
+        {
+            if (CurrentPlayerSum < DestinationNumber)
+            {
+                return
+                    tree.GetChields()
+                        .Where(node => node.Diff == diff)
+                        .Single(node => node.Data == tree.GetChields()
+                                                         .Where(n => n.Diff == diff)
+                                                         .Max(elem => elem.Data));
+            }
+            return
+                    tree.GetChields()
+                        .Where(node => node.Diff == diff)
+                        .Single(node => node.Data == tree.GetChields()
+                                                         .Where(n => n.Diff == diff)
+                                                         .Min(elem => elem.Data));
+        }
 
+        private void PrintPath(MiniMaxTree tree, int level, int diff)
+        {
+            Console.WriteLine("Path @ Level [" + level + "] = '" + tree.Data + "' => " + tree.Diff);
+
+            if (tree.GetChields().Any())
+            {
+                PrintPath(Evaluate(tree, diff), level + 1, diff);
+            }
+        }
 
         public static MiniMaxTree BuildGameTree(int[] numbers, int depth)
         {
@@ -59,11 +90,14 @@ namespace Fishing_for_Numbers.Player
             }
         }
 
-        public int NegaMax(MiniMaxTree node, int sumOfPath)
+        private int NegaMax(MiniMaxTree node, int sumOfPath)
         {
             if (!node.IsLeaf())
             {
-                node.Diff = node.GetChields().Select(child => NegaMax(child, sumOfPath + node.Data)).Min();
+                node.Diff = node.GetChields()
+                                .OrderByDescending(n => n.Data)
+                                .Select(child => NegaMax(child, sumOfPath + node.Data))
+                                .Min();
                 return node.Diff;
             }
 
