@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Net.Security;
 
 namespace Fishing_for_Numbers.Player
 {
@@ -12,33 +10,35 @@ namespace Fishing_for_Numbers.Player
 
         private MiniMaxTree _currentTree;
 
-        public string Name { get; private set; }
-        public int DestinationNumber { get; set; }
-
-        public int CurrentPlayerSum { get; set; }
-
         public MinMaxAi(int treeDepth)
         {
             _treeDepth = treeDepth;
             Name = "MinMax-AI";
         }
 
-        public override string ToString()
-        {
-            return Name;
-        }
+        public int CurrentPlayerSum { get; set; }
+
+        public string Name { get; private set; }
+        public int DestinationNumber { get; set; }
 
         public int ChooseNumber(int currentPlayerSum, IEnumerable<int> freeNumbers)
         {
             CurrentPlayerSum = currentPlayerSum;
-            _currentTree = BuildGameTree(freeNumbers.ToArray(), _treeDepth);
+            var numbers = freeNumbers as int[] ?? freeNumbers.ToArray();
 
-            var diff = NegaMax(_currentTree, CurrentPlayerSum);
-            var node = Evaluate(_currentTree, diff);
+            _currentTree = BuildGameTree(numbers, _treeDepth);
+
+            int diff = NegaMax(_currentTree, CurrentPlayerSum, false);
+            MiniMaxTree node = Evaluate(_currentTree, diff);
 
             PrintPath(node, 0, diff);
-            //Console.ReadLine();
+            Console.ReadLine();
             return node.Data;
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
 
         private MiniMaxTree Evaluate(MiniMaxTree tree, int diff)
@@ -49,25 +49,30 @@ namespace Fishing_for_Numbers.Player
                     tree.GetChields()
                         .Where(node => node.Diff == diff)
                         .Single(node => node.Data == tree.GetChields()
-                                                         .Where(n => n.Diff == diff)
-                                                         .Max(elem => elem.Data));
+                            .Where(n => n.Diff == diff)
+                            .Max(elem => elem.Data));
             }
             return
-                    tree.GetChields()
-                        .Where(node => node.Diff == diff)
-                        .Single(node => node.Data == tree.GetChields()
-                                                         .Where(n => n.Diff == diff)
-                                                         .Min(elem => elem.Data));
+                tree.GetChields()
+                    .Where(node => node.Diff == diff)
+                    .Single(node => node.Data == tree.GetChields()
+                        .Where(n => n.Diff == diff)
+                        .Min(elem => elem.Data));
         }
 
         private void PrintPath(MiniMaxTree tree, int level, int diff)
         {
+            Console.ForegroundColor = tree.RegisterMove ? ConsoleColor.Green : ConsoleColor.Red;
+
             Console.WriteLine("Path @ Level [" + level + "] = '" + tree.Data + "' => " + tree.Diff);
+
+            Console.ResetColor();
 
             if (tree.GetChields().Any())
             {
                 PrintPath(Evaluate(tree, diff), level + 1, diff);
             }
+
         }
 
         public static MiniMaxTree BuildGameTree(int[] numbers, int depth)
@@ -81,7 +86,7 @@ namespace Fishing_for_Numbers.Player
         {
             if (depthLeft == 0) return;
             foreach (
-                var node in
+                MiniMaxTree node in
                     numbers.Select(
                         number => new MiniMaxTree(number) {NumbersLeft = numbers.Except(new[] {number}).ToArray()}))
             {
@@ -90,18 +95,26 @@ namespace Fishing_for_Numbers.Player
             }
         }
 
-        private int NegaMax(MiniMaxTree node, int sumOfPath)
+        private int NegaMax(MiniMaxTree node, int sumOfPath, bool myMove)
         {
+            node.RegisterMove = myMove;
+
             if (!node.IsLeaf())
             {
                 node.Diff = node.GetChields()
-                                .OrderByDescending(n => n.Data)
-                                .Select(child => NegaMax(child, sumOfPath + node.Data))
-                                .Min();
+                    .Select(child => NegaMax(child, ((myMove)
+                        ? sumOfPath + node.Data
+                        : sumOfPath),
+                        !myMove))
+                    .Min();
+
+
                 return node.Diff;
             }
 
-            node.Diff = Math.Abs(DestinationNumber - sumOfPath + node.Data);
+            node.Diff = (myMove) 
+                ? Math.Abs(DestinationNumber - sumOfPath + node.Data)
+                : Math.Abs(DestinationNumber - sumOfPath);
             return node.Diff;
         }
     }
