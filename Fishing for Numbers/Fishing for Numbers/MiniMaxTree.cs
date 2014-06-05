@@ -7,8 +7,9 @@ namespace Fishing_for_Numbers
     {
         public int[] NumbersLeft { get; set; }
 
-        public int Diff { get; set; }
+        public int MyDiff { get; set; }
         public bool RegisterMove { get; set; }
+        public int OppDiff { get; set; }
 
         public MiniMaxTree(int number) : base(number)
         { }

@@ -1,4 +1,6 @@
-﻿using Fishing_for_Numbers.Player;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Fishing_for_Numbers.Player;
 using NUnit.Framework;
 
 namespace Fishing_for_Numbers_Tests.Player
@@ -22,7 +24,7 @@ namespace Fishing_for_Numbers_Tests.Player
             var nodeCount1 = 0;
 
             //Act            
-            var tree1 = MinMaxAi.BuildGameTree(_numbers, 1);
+            var tree1 = NegaMaxAi.BuildGameTree(_numbers, 1);
             tree1.Traverse(node => ++nodeCount1);
 
             //Assert
@@ -37,7 +39,7 @@ namespace Fishing_for_Numbers_Tests.Player
             var nodeCount = 0;
 
             //Act            
-            var tree = MinMaxAi.BuildGameTree(_numbers, 2);
+            var tree = NegaMaxAi.BuildGameTree(_numbers, 2);
             tree.Traverse(node => ++nodeCount);
 
             //Assert
@@ -55,7 +57,7 @@ namespace Fishing_for_Numbers_Tests.Player
             var nodeCount = 0;
 
             //Act            
-            var tree = MinMaxAi.BuildGameTree(_numbers, 3);
+            var tree = NegaMaxAi.BuildGameTree(_numbers, 3);
             tree.Traverse(node => ++nodeCount);
 
             //Assert
@@ -65,6 +67,20 @@ namespace Fishing_for_Numbers_Tests.Player
             var layer3 = layer2 * (_numbers.Length - 2);
 
             Assert.That(nodeCount, Is.EqualTo(layer3 + layer2 + layer1 + 1));
+        }
+
+        [Test]
+        public void IEnumerable_Test()
+        {
+            IEnumerable<int> testNumbers = new[] {1, 2, 3, 4, 4, 4, 4};
+            var arr = testNumbers.ToArray();
+            var arr2 = testNumbers.ToArray<int>();
+            var arr3 = (int[])testNumbers;
+
+
+            Assert.That(testNumbers.Count(), Is.EqualTo(arr.Length));
+            Assert.That(testNumbers.Count(), Is.EqualTo(arr2.Length));
+            Assert.That(testNumbers.Count(), Is.EqualTo(arr3.Length));
         }
     }
 }
